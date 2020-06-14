@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Two-view Geometry | Ranqing&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="对极几何 &#x2F; Epipolar Geometry 1234single-view geometry revisited:1. 标定内参：vanish point &#x2F; zhang‘s checkboard pattern2. 标定外参：PnP &#x2F; P3P &#x2F; EPnP3. 内外参数一起标定：camera resection 本文学习Two-View Geometry，假">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Two-view Geometry">
+<meta property="og:url" content="http://www.imranqing.com/blog/2020/06/14/Two-view%20Geometry/index.html">
+<meta property="og:site_name" content="Ranqing&#39;s Blog">
+<meta property="og:description" content="对极几何 &#x2F; Epipolar Geometry 1234single-view geometry revisited:1. 标定内参：vanish point &#x2F; zhang‘s checkboard pattern2. 标定外参：PnP &#x2F; P3P &#x2F; EPnP3. 内外参数一起标定：camera resection 本文学习Two-View Geometry，假">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-06-14T05:10:13.099Z">
+<meta property="article:modified_time" content="2020-06-14T05:10:13.103Z">
+<meta property="article:author" content="Qing Ran">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/blog/atom.xml" title="Ranqing&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/blog/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/blog/" id="logo">Ranqing&#39;s Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/blog/">Home</a>
+        
+          <a class="main-nav-link" href="/blog/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/blog/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://www.imranqing.com/blog"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Two-view Geometry" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/2020/06/14/Two-view%20Geometry/" class="article-date">
+  <time datetime="2020-06-14T05:10:13.099Z" itemprop="datePublished">2020-06-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Two-view Geometry
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>对极几何 / Epipolar Geometry</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">single-view geometry revisited:</span><br><span class="line">1. 标定内参：vanish point &#x2F; zhang‘s checkboard pattern</span><br><span class="line">2. 标定外参：PnP &#x2F; P3P &#x2F; EPnP</span><br><span class="line">3. 内外参数一起标定：camera resection</span><br></pre></td></tr></table></figure>
+<p>本文学习Two-View Geometry，假设两个相机可以看到空间同一个点<code>P</code>，在左右相机的投影点分别为<code>p</code>，<code>q</code>，它们之间存在一些几何关系，称之为Epipolar Gemotry。</p>
+<h3 id="几何性质"><a href="#几何性质" class="headerlink" title="几何性质"></a>几何性质</h3><ol>
+<li><p>极平面 / Epipolar Plane<br>像素点<code>p</code>，<code>q</code>与各自相机中心的连线: <code>(k_p)^-1·p</code>, <code>(k_q)^-1·q</code> 和相机中心连线（基线：baseline）组成的平面；由两个相机中心和三维点组成的平面。</p>
+</li>
+<li><p>极线 / Epipolar Line<br>Epipolar Plane和图像平面的交线，互为三维点与对应的相机中心的光线的投影。<code>p</code>点在第二张图的对应位置只能在该图上的epipolar line上，反之亦然。</p>
+</li>
+<li><p>极点 / Epipole:<br>两个相机中心的连线与图像平面的交点。还可以理解成为：一个同时可见的三维点与两个相机中心组成一个极平面，那么可以想象所有的极平面是绕着基线在旋转。这些极平面与图像相交得到的极线的交点即为epipole，即所有极线有唯一交点。</p>
+</li>
+</ol>
+<h3 id="代数表示"><a href="#代数表示" class="headerlink" title="代数表示"></a>代数表示</h3><ol>
+<li>Essential Matrix </li>
+</ol>
+<p><strong>相机内参已知</strong>，那么由像素点<code>p</code>，<code>q</code>可以得到两个三维向量的方向： <code>(k_p)^-1·p</code> 和<code>(k_q)^-1·q</code>，此时这两个向量分别位于各自相机坐标系下，为了简写，直接记做<code>p</code>，<code>q</code>。<br>当两个相机之间的旋转<code>R</code>和平移<code>T</code>已知，先把第二个相机中的三维向量根据旋转矩阵<code>R</code>变换到第一个相机的坐标系中，为<code>R^T·q</code>，再根据Epipolar Geometry中的极平面的共面约束 -&gt; <code>p</code>, <code>t</code>, <code>R^T*q</code>三个向量共面（在第一个相机坐标系下）；<br>共面约束在代数中表示为： <code>a,b,c</code>三个向量共面，那么其混合积Mix Product - <code>cross-product(b,c).dot(a)</code>为0。另，三个向量的混合集也可以表示这三个向量所组成平行六面体的体积。<br>由此，有代数方程：<code>p·(txR^Tq) = 0</code>，先把cross-product变换为矩阵计算<code>[t]_x = []</code>，那么改代数方程可以写为 <code>p^T·[t]_xR^Tq) = 0</code>，再整体进行一次transpose，得到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">q^TR[t]_xp&#x3D;0</span><br></pre></td></tr></table></figure>
+<p>其中的矩阵<code>R[t]_x</code>即为Essential Matrix <code>E</code>，这里的<code>p</code>，<code>q</code>分别是相机坐标系由内参和像素点得到的三维向量。<br>以上，Essential Matrix的物理意义可以简单的概括为：两个相机内参已知，<code>p</code>，<code>q</code>是相机坐标系下的三维向量，满足等式：<code>pEq = 0</code>，<code>E=R[t]_x</code> 即若干个三维点在双目中可见，那么这些三维点在各自相机坐标系下的坐标应该满足的代数关系，<code>E</code>可以被分解为两个相机之间的相对外参：<code>R</code>，<code>t</code>。</p>
+<ol start="2">
+<li>和 Fundamental Matrix</li>
+</ol>
+<p><strong>相机内参未知</strong>，使用<code>p&#39;</code>，<code>q&#39;</code>表示像素点，那么带入到Essential Matrix的方程中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（(k_q)^-1·q&#39;)^T·R[t]_x·((k_p)^-1·p&#39;)&#x3D;0</span><br></pre></td></tr></table></figure>
+<p>整理后有：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">q&#39;^T·(k_q)^-T·R[t]_x·(k_p)^-1·p&#39;&#x3D;0</span><br></pre></td></tr></table></figure>
+<p>其中的矩阵<code>(k_q)^-T·R[t]_x·(k_p)^-1</code>记做Fundamental Matrix <code>F</code>，表示两个图像平面对应点的像素坐标<code>p&#39;</code>，<code>q&#39;</code> （齐次坐标表示）应该满足的代数关系。<br>与Essential Matrix的区别是：Fundamental Matrix 描述的是两个像素的关系，Essential Matrix 描述的是两个三维向量的关系。</p>
+<p>更近一步理解Fundamental Matrix：Epipolar Geometry都可以从F得到，比如第一张图的像素<code>p</code>在第二张图像中的对应点<code>q</code>一定位于极线<code>Fp</code>上。<br>另外epipole的求解：假设<code>e1</code>是第二个相机中心<code>c2</code>在第一个相机的图像平面的投影点，<code>e2</code>是第一个相机中心<code>c1</code>在第二个相机平面的投影点。由于所有的极线都通过epipole，那么对于相机1的任意的一个像素点<code>p</code>，那么其极线<code>Fp</code>都通过epipole <code>e2</code>，意味着 <code>(e2^T)Fp=0</code>，对于任何一个p都成立，那么<code>(e2^T)F=0</code>，反之有<code>F(e1)=0</code>成立。</p>
+<h3 id="求解"><a href="#求解" class="headerlink" title="求解"></a>求解</h3><p>F的大小为3x3，初始自由度为9，由于方程定义在摄影几何，是equal up to scale，因此自由度实际为8。另外由于epipole的存在，那么<code>rank(F)=2</code>， 因此F的自由度为7。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.imranqing.com/blog/2020/06/14/Two-view%20Geometry/" data-id="ckbem5f2y00003fv1ebln6i14" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/blog/2020/06/14/Dynamic%20Programming/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Dynamic Programming
+        
+      </div>
+    </a>
+  
+  
+    <a href="/blog/2020/05/15/How%20to%20build%20a%20blog/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">How to build a blog</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2020/05/">May 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/2020/06/14/Dynamic%20Programming/">Dynamic Programming</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2020/06/14/Two-view%20Geometry/">Two-view Geometry</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2020/05/15/How%20to%20build%20a%20blog/">How to build a blog</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Qing Ran<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/blog/" class="mobile-nav-link">Home</a>
+  
+    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/blog/fancybox/jquery.fancybox.css">
+
+  
+<script src="/blog/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/blog/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
