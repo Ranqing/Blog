@@ -87,7 +87,7 @@
 <meta property="og:description" content="处理字符串是动态规划经典题目类型之一，包括：最长递增子序列&#x2F;子串；最长公共子序列&#x2F;子串；最长回文子序列&#x2F;子串；其中子串要求元素是连续的，而子序列不需要。这篇文章讲先对动态规划进行回顾，然后结合几个经典的字符串求解问题进行分析，并给出代码。 # 动态规划算法总的来说，动态规划是一种解决问题的方法。 用小学数学进行解释：如果我们知道1+1+1+1+1 &#x3D; 5，那么可以很快计算出1+1+1+1+1+1">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-06-14T05:10:13.312Z">
-<meta property="article:modified_time" content="2020-06-14T15:23:31.678Z">
+<meta property="article:modified_time" content="2020-06-15T04:19:18.531Z">
 <meta property="article:author" content="Qing Ran">
 <meta name="twitter:card" content="summary">
 
@@ -389,6 +389,9 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">int lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;</span><br><span class="line">    int cnt &#x3D; nums.size();</span><br><span class="line">    if(cnt &#x3D;&#x3D; 0) return 0;</span><br><span class="line">    vector&lt;int&gt; dp(cnt, 1);</span><br><span class="line">    int max_dp &#x3D; 0;</span><br><span class="line">    for(int i &#x3D; 0; i &lt; cnt; ++i) &#123;</span><br><span class="line">        for(int j &#x3D; 0; j &lt; i; ++j) &#123;</span><br><span class="line">            if(nums[i] &gt; nums[j]) &#123;</span><br><span class="line">                dp[i] &#x3D; max(dp[i], dp[j]+1);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        max_dp &#x3D; std::max(dp[i], max_dp);</span><br><span class="line">    &#125;</span><br><span class="line">    return max_dp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>最大连续递增子串<a href="https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/" target="_blank" rel="noopener">Leetcode 674</a>，题目描述如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">给定一个未经排序的整数数组，找到最长且连续的的递增序列，并返回该序列的长度。</span><br></pre></td></tr></table></figure>
+
+
 <h4 id="最长公共子序列-最长公共子串"><a href="#最长公共子序列-最长公共子串" class="headerlink" title="# 最长公共子序列 / 最长公共子串"></a># 最长公共子序列 / 最长公共子串</h4><p>最长公共子序列<a href="https://leetcode-cn.com/problems/longest-common-subsequence/" target="_blank" rel="noopener">Leetcode 1143</a>，题目描述如下：<br>最长公共子串<a href="https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/" target="_blank" rel="noopener">Leetcode 718</a>，题目描述如下：</p>
 <h4 id="最长回文子序列-最长回文子串"><a href="#最长回文子序列-最长回文子串" class="headerlink" title="# 最长回文子序列 / 最长回文子串"></a># 最长回文子序列 / 最长回文子串</h4><p>最长回文子序列<a href="https://leetcode-cn.com/problems/longest-palindromic-subsequence/" target="_blank" rel="noopener">Leetcode 516</a>，题目描述如下：<br>最长回文子串<a href="https://leetcode-cn.com/problems/longest-palindromic-substring/" target="_blank" rel="noopener">Leetcode 5</a>，题目描述如下：</p>
 <h4 id="连续子数组的最大和-乘积最大子数组"><a href="#连续子数组的最大和-乘积最大子数组" class="headerlink" title="# 连续子数组的最大和 / 乘积最大子数组"></a># 连续子数组的最大和 / 乘积最大子数组</h4><p>连续子数组的最大和<a href="https://leetcode-cn.com/problems/maximum-subarray/" target="_blank" rel="noopener">Leetcode 53</a>，题目描述如下：<br>乘积最大子数组<a href="https://leetcode-cn.com/problems/maximum-product-subarray/" target="_blank" rel="noopener">Leetcode 152</a>，题目描述如下：</p>
@@ -621,7 +624,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">2.7k</span>
+    <span title="Site words total count">2.8k</span>
   
 </div>
 
