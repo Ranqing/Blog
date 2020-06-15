@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>How to build a blog</title>
+    <url>/blog/2020/05/15/How%20to%20build%20a%20blog/</url>
+    <content><![CDATA[<p>%—<br>%title: 如何在github.io的子目录下搭建博客<br>%—</p>
+<p>由于之前已经用了github.io这个repo来作为个人主页，因此想把个人博客作为该主页的二级目录，试了很多方法最后终于成功了。<br>这篇文章是可行方法的具体步骤，同时也作为该博客的测试篇！</p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>搭建博客之前，我已经在github创建了username.github.io，且在aliyun上买好了域名做好了映射。<br>以上都完成好之后，在本地安装node.js 和 hexo。</p>
+<h3 id="安装命令-mac"><a href="#安装命令-mac" class="headerlink" title="安装命令(mac)"></a>安装命令(mac)</h3><p>需要去node.js官网下载pkg安装软件，安装好进行检查。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## install node.js , come with npm together</span></span><br><span class="line"><span class="comment">## npm is the package manager of node.js</span></span><br><span class="line"><span class="comment">## check</span></span><br><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
+
+<p>安装node.js无误之后再利用npm安装hexo</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br></pre></td></tr></table></figure>
+
+<p>可能会遇到一些问题：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 需要替换为taobao源，之后npm换为cnpm</span></span><br><span class="line">npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br><span class="line"></span><br><span class="line"><span class="comment">## 需要修改属性</span></span><br><span class="line">sudo chown -R <span class="variable">$USER</span> /usr/<span class="built_in">local</span></span><br></pre></td></tr></table></figure>
+<p>安装完成之后使用<code>hexo -v</code>进行检查</p>
+<h2 id="建立本地的hexo-blog"><a href="#建立本地的hexo-blog" class="headerlink" title="建立本地的hexo blog"></a>建立本地的hexo blog</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo init my-blog</span><br><span class="line">npm install</span><br><span class="line">npm install hexo-deployer-git --save</span><br><span class="line"></span><br><span class="line">hexo generate / hexo g  <span class="comment">#生成静态文件</span></span><br><span class="line">hexo server   / hexo s  [-i 127.0.0.1] [-p 4000]<span class="comment">#默认在本地的4000端口启动项目</span></span><br><span class="line">hexo deploy   / hexo d  <span class="comment">#将.deploy目录部署 [到Github]</span></span><br><span class="line">hexo g -d     / hexo d -g  <span class="comment">#生成完毕后自动部署</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="建立Github-Repo，并且修改hexo-blog下的-config-yml"><a href="#建立Github-Repo，并且修改hexo-blog下的-config-yml" class="headerlink" title="建立Github Repo，并且修改hexo blog下的_config.yml"></a>建立Github Repo，并且修改hexo blog下的_config.yml</h2><p>直接在Github上New一个Repo，名称叫做所需网址的二级目录名称（e.g. blog)<br>修改_config.yml</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># URL</span></span><br><span class="line">url: https://username.github.io/blog</span><br><span class="line">root: /blog/</span><br><span class="line">permalink: :year/:month/:day/:title</span><br><span class="line">permalink_defaults:</span><br><span class="line"></span><br><span class="line"><span class="comment"># Deployment</span></span><br><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repository: https://github.com/username/blog.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+
+<h2 id="执行部署"><a href="#执行部署" class="headerlink" title="执行部署"></a>执行部署</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g -d</span><br></pre></td></tr></table></figure>
+
+<p>打开github上blog的setting界面，Github Pages勾选master branch。<br>此时输入网址 <a href="http://www.username.com/blog" target="_blank" rel="noopener">http://www.username.com/blog</a> 就可以访问了。<br>所有的文章的位置在my-blog/source/_posts 目录下，且使用markdown语法。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Dynamic Programming</title>
+    <url>/blog/2020/06/14/Dynamic%20Programming/</url>
+    <content><![CDATA[<p>处理字符串是动态规划经典题目类型之一，包括：最长递增子序列/子串；最长公共子序列/子串；最长回文子序列/子串；其中子串要求元素是连续的，而子序列不需要。这篇文章讲先对动态规划进行回顾，然后结合几个经典的字符串求解问题进行分析，并给出代码。</p>
+<h3 id="动态规划算法"><a href="#动态规划算法" class="headerlink" title="# 动态规划算法"></a># 动态规划算法</h3><p>总的来说，动态规划是一种解决问题的方法。</p>
+<p>用小学数学进行解释：如果我们知道<code>1+1+1+1+1 = 5</code>，那么可以很快计算出<code>1+1+1+1+1+1 = 6</code>，这是因为之前已经计算过前5项的值，即出现了重复子问题。这也类似于在证明中常用的数学归纳法，假设在问题规模为N时结论成立，只需要证明该结论为N+1时结论也成立，则该结论即是普适的。另外知乎上还有高赞回答提到可以用数列中的通项公式来理解动态规划。</p>
+<p>以上这些理解方式的共同点在于，要求解大规模问题（N+1）时，先去求解小规模的该问题（N+1），即找到重复子问题，然后记录小规模的子问题的值，最后快速得到大规模的该问题的结果。<br>（TODO 用递归的思路来解决，对递归中的相同的子问题进行记录，避免重复计算）。</p>
+<p>一个典型的动态规划求解分为以下几步：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 确定DP状态，即要求解的问题</span><br><span class="line">2. 确定边界处的DP状态值，即Base Case的DP值</span><br><span class="line">3. 确定 i 到 i+1 的DP状态转移方程 （类似于通项公式推导）</span><br><span class="line">4. 编写问题规模从小到大的程序求解最终答案</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们用Leetcode中一些字符串相关的典型DP问题对这些步骤进行理解。</p>
+<h4 id="最长递增子序列-最长连续递增子串"><a href="#最长递增子序列-最长连续递增子串" class="headerlink" title="# 最长递增子序列 / 最长连续递增子串"></a># 最长递增子序列 / 最长连续递增子串</h4><p>最长递增子序列原题链接<a href="https://leetcode-cn.com/problems/longest-increasing-subsequence/" target="_blank" rel="noopener">Leetcode 300</a>，题目描述如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">给定一个无序的整数数组，找到其中最长上升子序列的长度。</span><br><span class="line">示例:</span><br><span class="line">输入: [10,9,2,5,3,7,101,18]</span><br><span class="line">输出: 4 </span><br><span class="line">解释: 最长的上升子序列是 [2,3,7,101]，它的长度是 4。</span><br><span class="line">说明:</span><br><span class="line">可能会有多种最长上升子序列的组合，你只需要输出对应的长度即可。</span><br><span class="line">你算法的时间复杂度应该为 O(n2) 。</span><br><span class="line">进阶: 你能将算法的时间复杂度降低到 O(n log n) 吗?</span><br></pre></td></tr></table></figure>
+<p>按照上面的典型求解步骤，题解如下：</p>
+<p>1) 确定DP状态：一维dp数组，dp[i]表示以num[i]为结尾的递增子序列的长度。<br>2) 确定DP初始和边界状态：由于每个元素的递增子序列都会包括自己，因此初始状态所有元素为1，边界状态：dp[0]=1<br>3) 确定DP状态转移方程：dp[i] = num[i] &gt; num[j] ? max(dp[j]) + 1 : num[j] 是 num[i]之前的所有元素；返回结果是dp数组中的最大值<br>4) 编写程序：问题规模从小到大</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;</span><br><span class="line">    int cnt &#x3D; nums.size();</span><br><span class="line">    if(cnt &#x3D;&#x3D; 0) return 0;</span><br><span class="line">    vector&lt;int&gt; dp(cnt, 1);</span><br><span class="line">    int max_dp &#x3D; 0;</span><br><span class="line">    for(int i &#x3D; 0; i &lt; cnt; ++i) &#123;</span><br><span class="line">        for(int j &#x3D; 0; j &lt; i; ++j) &#123;</span><br><span class="line">            if(nums[i] &gt; nums[j]) &#123;</span><br><span class="line">                dp[i] &#x3D; max(dp[i], dp[j]+1);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        max_dp &#x3D; std::max(dp[i], max_dp);</span><br><span class="line">    &#125;</span><br><span class="line">    return max_dp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最大连续递增子串<a href="https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/" target="_blank" rel="noopener">Leetcode 674</a>，题目描述如下：</p>
+<h4 id="最长公共子序列-最长公共子串"><a href="#最长公共子序列-最长公共子串" class="headerlink" title="# 最长公共子序列 / 最长公共子串"></a># 最长公共子序列 / 最长公共子串</h4><p>最长公共子序列<a href="https://leetcode-cn.com/problems/longest-common-subsequence/" target="_blank" rel="noopener">Leetcode 1143</a>，题目描述如下：<br>最长公共子串<a href="https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/" target="_blank" rel="noopener">Leetcode 718</a>，题目描述如下：</p>
+<h4 id="最长回文子序列-最长回文子串"><a href="#最长回文子序列-最长回文子串" class="headerlink" title="# 最长回文子序列 / 最长回文子串"></a># 最长回文子序列 / 最长回文子串</h4><p>最长回文子序列<a href="https://leetcode-cn.com/problems/longest-palindromic-subsequence/" target="_blank" rel="noopener">Leetcode 516</a>，题目描述如下：<br>最长回文子串<a href="https://leetcode-cn.com/problems/longest-palindromic-substring/" target="_blank" rel="noopener">Leetcode 5</a>，题目描述如下：</p>
+<h4 id="连续子数组的最大和-乘积最大子数组"><a href="#连续子数组的最大和-乘积最大子数组" class="headerlink" title="# 连续子数组的最大和 / 乘积最大子数组"></a># 连续子数组的最大和 / 乘积最大子数组</h4><p>连续子数组的最大和<a href="https://leetcode-cn.com/problems/maximum-subarray/" target="_blank" rel="noopener">Leetcode 53</a>，题目描述如下：<br>乘积最大子数组<a href="https://leetcode-cn.com/problems/maximum-product-subarray/" target="_blank" rel="noopener">Leetcode 152</a>，题目描述如下：</p>
+<p>此外还有很多动态规划的题目，可以看一下Leetcode题目分类练习。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>每日一题</title>
+    <url>/blog/2020/06/14/Leetcode%20Everyday/</url>
+    <content><![CDATA[<p>2020-06-14：<a href="https://leetcode-cn.com/problems/sum-of-mutated-array-closest-to-target/" target="_blank" rel="noopener">Leetcode 1300</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Two-view Geometry</title>
+    <url>/blog/2020/06/14/Two-view%20Geometry/</url>
+    <content><![CDATA[<p>首先小结单目相机中学习过的问题：标定内参（vanishing point / zhang’s checkboard pattern）；标定外参（PnP / P3P / EPnP）；内外参数一起标定（camera resection）。本文学习Two-View Geometry，也可以称为对极几何（epipolar geometry）。假设两个相机可以看到空间同一个点 $P$，在左右相机的投影点分别为 $p$ 和 $q$，它们之间满足的几何性质被称为对极几何。</p>
+<h3 id="几何概念"><a href="#几何概念" class="headerlink" title="几何概念"></a>几何概念</h3><ol>
+<li><p>极平面 Epipolar Plane<br>由两个相机中心和三维点组成的平面。具体地，像素点 $p$，$q$ 与各自相机中心的连线得到的三维向量: $K_p^{-1}p$, $K_q^{-1}q$ 以及相机中心连线（基线：baseline）所组成的平面；</p>
+</li>
+<li><p>极线 Epipolar Line<br>Epipolar Plane和图像平面的交线，互为三维点与对应的相机中心的光线的投影。<code>p</code>点在第二张图的对应位置只能在该图上的epipolar line上，反之亦然。</p>
+</li>
+<li><p>极点 Epipole<br>两个相机中心的连线与图像平面的交点。还可以理解成为：一个同时可见的三维点与两个相机中心组成一个极平面，那么可以想象所有的极平面是绕着基线在旋转。这些极平面与图像相交得到的极线的交点即为epipole，即所有极线有唯一交点。</p>
+</li>
+</ol>
+<h3 id="代数表示"><a href="#代数表示" class="headerlink" title="代数表示"></a>代数表示</h3><ol>
+<li>Essential Matrix </li>
+</ol>
+<p><strong>相机内参已知</strong>，那么由像素点 $p$，$q$ 可以得到两个三维向量的方向： $K_p^{-1}p$ 和 $K_q^{-1}q$，此时这两个向量分别位于各自相机坐标系下，为了简写，直接记做 $p$，$q$。<br>当两个相机之间的旋转 $R$ 和平移 $T$ 已知，先把第二个相机中的三维向量根据旋转矩阵 $R$ 变换到第一个相机的坐标系中，为$R^Tq$，再根据Epipolar Geometry中的极平面的共面约束: $p$, $t$, $R^Tq$ 三个向量共面（在第一个相机坐标系下）；<br>共面约束在代数中表示为： 三个向量 $a$，$b$，$c$ 共面，那么其混合积（Mix Product）$(b\times{c})\cdot{a}$ 等于 $0$。理解：三个向量的混合积的物理意义表示这三个向量所组成平行六面体的体积，三个向量共面时体积为0。<br>则有代数方程：$(t\times{R^T}q)\cdot{p} = 0$，先把cross-product变换为矩阵计算，那么该代数方程可以写为 $p^T[t]_{\times}R^Tq = 0$，再对等式整体进行一次转置有：</p>
+<p>$$q^TR[t]_{\times}p=0$$</p>
+<p>其中矩阵 $R[t]_x$ 即为Essential Matrix $E$，这里的 $p$，$q$ 分别是相机坐标系由内参和像素点得到的三维向量。</p>
+<p>以上，Essential Matrix的物理意义可以简单的概括为：两个相机内参已知，$p$，$q$ 是相机坐标系下的三维向量，满足等式：$pEq = 0$，$E=R[t]_{\times}$ 。 即若干个三维点在双目中可见，那么这些三维点在各自相机坐标系下的坐标应该满足的代数关系，$E$ 可以被分解为两个相机之间的相对外参：$R$，$t$，分别为一个正定矩阵和一个反对称矩阵。</p>
+<ol start="2">
+<li>Fundamental Matrix</li>
+</ol>
+<p><strong>相机内参未知</strong>，使用 $\hat{p}$，$\hat{q}$ 表示像素点，那么带入到Essential Matrix的方程中：</p>
+<p>$$（(K_q)^{-1}·\hat{q})^T·R[t]_{\times}·((K_p)^{-1}·\hat{p})=0 $$</p>
+<p>整理后有：</p>
+<p>$$ \hat{q}^T·(K_q)^{-T}·R[t]_{\times}·(K_p)^{-1}·\hat{p}=0 $$ </p>
+<p>其中的矩阵 $(K_q)^{-T}·R[t]_{\times}·(K_p)^{-1}$ 记做Fundamental Matrix $F$，表示两个图像平面对应点的像素坐标 $\hat{p}$，$\hat{q}$ （齐次坐标）应该满足的代数关系。之后的讨论中，为了简便，像素点也使用 $p$，$q$。与Essential Matrix的区别是：Fundamental Matrix 描述的是两个像素的关系，Essential Matrix 描述的是两个三维向量的关系。</p>
+<p>更近一步理解Fundamental Matrix：Epipolar Geometry都可以从 $F$ 得到，比如第一张图的像素 $p$ 在第二张图像中的对应点 $q$ 一定位于极线 $Fp$ 上。<br>另外epipole的求解：假设 $e_1$ 是第二个相机中心 $C_2$在第一个相机的图像平面的投影点，$e_2$ 是第一个相机中心 $c_1$ 在第二个相机平面的投影点。由于所有的极线都通过epipole，那么对于相机1的任意的一个像素点 $p$，那么其极线 $Fp$ 都通过epipole $e_2$，意味着 $(e_2^T)Fp=0$，对于任何一个p都成立，那么 $(e_2^T)F=0$，反之有 $F(e_1)=0$成立。</p>
+<h3 id="求解"><a href="#求解" class="headerlink" title="求解"></a>求解</h3><p>$F$ 的大小为3x3，初始自由度为9，由于方程定义在摄影几何，是equal up to scale，因此自由度实际为8。另外由于epipole的存在，那么 $rank(F)=2$， 因此 $F$ 的自由度为7。</p>
+]]></content>
+  </entry>
+</search>

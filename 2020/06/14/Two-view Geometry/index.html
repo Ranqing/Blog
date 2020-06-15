@@ -1,237 +1,1188 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
+
+
 
   
-  <title>Two-view Geometry | Ranqing&#39;s Blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="对极几何 &#x2F; Epipolar Geometry 1234single-view geometry revisited:1. 标定内参：vanish point &#x2F; zhang‘s checkboard pattern2. 标定外参：PnP &#x2F; P3P &#x2F; EPnP3. 内外参数一起标定：camera resection 本文学习Two-View Geometry，假">
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="首先小结单目相机中学习过的问题：标定内参（vanishing point &#x2F; zhang’s checkboard pattern）；标定外参（PnP &#x2F; P3P &#x2F; EPnP）；内外参数一起标定（camera resection）。本文学习Two-View Geometry，也可以称为对极几何（epipolar geometry）。假设两个相机可以看到空间同一个点 $P$，在左右相机的投影点分别">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Two-view Geometry">
 <meta property="og:url" content="http://www.imranqing.com/blog/2020/06/14/Two-view%20Geometry/index.html">
 <meta property="og:site_name" content="Ranqing&#39;s Blog">
-<meta property="og:description" content="对极几何 &#x2F; Epipolar Geometry 1234single-view geometry revisited:1. 标定内参：vanish point &#x2F; zhang‘s checkboard pattern2. 标定外参：PnP &#x2F; P3P &#x2F; EPnP3. 内外参数一起标定：camera resection 本文学习Two-View Geometry，假">
+<meta property="og:description" content="首先小结单目相机中学习过的问题：标定内参（vanishing point &#x2F; zhang’s checkboard pattern）；标定外参（PnP &#x2F; P3P &#x2F; EPnP）；内外参数一起标定（camera resection）。本文学习Two-View Geometry，也可以称为对极几何（epipolar geometry）。假设两个相机可以看到空间同一个点 $P$，在左右相机的投影点分别">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-06-14T05:10:13.099Z">
-<meta property="article:modified_time" content="2020-06-14T05:10:13.103Z">
+<meta property="article:published_time" content="2020-06-14T15:50:30.000Z">
+<meta property="article:modified_time" content="2020-06-15T03:09:21.076Z">
 <meta property="article:author" content="Qing Ran">
 <meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.imranqing.com/blog/2020/06/14/Two-view Geometry/"/>
+
+
+
+
+
+  <title>Two-view Geometry | Ranqing's Blog</title>
   
-    <link rel="alternate" href="/blog/atom.xml" title="Ranqing&#39;s Blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="favicon.ico">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  
-<link rel="stylesheet" href="/blog/css/style.css">
+
+
+
+
+
+
+
 
 <meta name="generator" content="Hexo 4.2.1"></head>
 
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/blog/" id="logo">Ranqing&#39;s Blog</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/blog/">Home</a>
-        
-          <a class="main-nav-link" href="/blog/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/blog/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://www.imranqing.com/blog"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main"><article id="post-Two-view Geometry" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/blog/2020/06/14/Two-view%20Geometry/" class="article-date">
-  <time datetime="2020-06-14T05:10:13.099Z" itemprop="datePublished">2020-06-14</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
   
-    <h1 class="article-title" itemprop="name">
-      Two-view Geometry
-    </h1>
+  
+    
   
 
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ranqing's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.imranqing.com/blog/blog/2020/06/14/Two-view%20Geometry/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Qing Ran">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ranqing's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Two-view Geometry</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-14T23:50:30+08:00">
+                2020-06-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
       </header>
     
-    <div class="article-entry" itemprop="articleBody">
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
-        <p>对极几何 / Epipolar Geometry</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">single-view geometry revisited:</span><br><span class="line">1. 标定内参：vanish point &#x2F; zhang‘s checkboard pattern</span><br><span class="line">2. 标定外参：PnP &#x2F; P3P &#x2F; EPnP</span><br><span class="line">3. 内外参数一起标定：camera resection</span><br></pre></td></tr></table></figure>
-<p>本文学习Two-View Geometry，假设两个相机可以看到空间同一个点<code>P</code>，在左右相机的投影点分别为<code>p</code>，<code>q</code>，它们之间存在一些几何关系，称之为Epipolar Gemotry。</p>
-<h3 id="几何性质"><a href="#几何性质" class="headerlink" title="几何性质"></a>几何性质</h3><ol>
-<li><p>极平面 / Epipolar Plane<br>像素点<code>p</code>，<code>q</code>与各自相机中心的连线: <code>(k_p)^-1·p</code>, <code>(k_q)^-1·q</code> 和相机中心连线（基线：baseline）组成的平面；由两个相机中心和三维点组成的平面。</p>
+      
+
+      
+        <p>首先小结单目相机中学习过的问题：标定内参（vanishing point / zhang’s checkboard pattern）；标定外参（PnP / P3P / EPnP）；内外参数一起标定（camera resection）。本文学习Two-View Geometry，也可以称为对极几何（epipolar geometry）。假设两个相机可以看到空间同一个点 $P$，在左右相机的投影点分别为 $p$ 和 $q$，它们之间满足的几何性质被称为对极几何。</p>
+<h3 id="几何概念"><a href="#几何概念" class="headerlink" title="几何概念"></a>几何概念</h3><ol>
+<li><p>极平面 Epipolar Plane<br>由两个相机中心和三维点组成的平面。具体地，像素点 $p$，$q$ 与各自相机中心的连线得到的三维向量: $K_p^{-1}p$, $K_q^{-1}q$ 以及相机中心连线（基线：baseline）所组成的平面；</p>
 </li>
-<li><p>极线 / Epipolar Line<br>Epipolar Plane和图像平面的交线，互为三维点与对应的相机中心的光线的投影。<code>p</code>点在第二张图的对应位置只能在该图上的epipolar line上，反之亦然。</p>
+<li><p>极线 Epipolar Line<br>Epipolar Plane和图像平面的交线，互为三维点与对应的相机中心的光线的投影。<code>p</code>点在第二张图的对应位置只能在该图上的epipolar line上，反之亦然。</p>
 </li>
-<li><p>极点 / Epipole:<br>两个相机中心的连线与图像平面的交点。还可以理解成为：一个同时可见的三维点与两个相机中心组成一个极平面，那么可以想象所有的极平面是绕着基线在旋转。这些极平面与图像相交得到的极线的交点即为epipole，即所有极线有唯一交点。</p>
+<li><p>极点 Epipole<br>两个相机中心的连线与图像平面的交点。还可以理解成为：一个同时可见的三维点与两个相机中心组成一个极平面，那么可以想象所有的极平面是绕着基线在旋转。这些极平面与图像相交得到的极线的交点即为epipole，即所有极线有唯一交点。</p>
 </li>
 </ol>
 <h3 id="代数表示"><a href="#代数表示" class="headerlink" title="代数表示"></a>代数表示</h3><ol>
 <li>Essential Matrix </li>
 </ol>
-<p><strong>相机内参已知</strong>，那么由像素点<code>p</code>，<code>q</code>可以得到两个三维向量的方向： <code>(k_p)^-1·p</code> 和<code>(k_q)^-1·q</code>，此时这两个向量分别位于各自相机坐标系下，为了简写，直接记做<code>p</code>，<code>q</code>。<br>当两个相机之间的旋转<code>R</code>和平移<code>T</code>已知，先把第二个相机中的三维向量根据旋转矩阵<code>R</code>变换到第一个相机的坐标系中，为<code>R^T·q</code>，再根据Epipolar Geometry中的极平面的共面约束 -&gt; <code>p</code>, <code>t</code>, <code>R^T*q</code>三个向量共面（在第一个相机坐标系下）；<br>共面约束在代数中表示为： <code>a,b,c</code>三个向量共面，那么其混合积Mix Product - <code>cross-product(b,c).dot(a)</code>为0。另，三个向量的混合集也可以表示这三个向量所组成平行六面体的体积。<br>由此，有代数方程：<code>p·(txR^Tq) = 0</code>，先把cross-product变换为矩阵计算<code>[t]_x = []</code>，那么改代数方程可以写为 <code>p^T·[t]_xR^Tq) = 0</code>，再整体进行一次transpose，得到：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">q^TR[t]_xp&#x3D;0</span><br></pre></td></tr></table></figure>
-<p>其中的矩阵<code>R[t]_x</code>即为Essential Matrix <code>E</code>，这里的<code>p</code>，<code>q</code>分别是相机坐标系由内参和像素点得到的三维向量。<br>以上，Essential Matrix的物理意义可以简单的概括为：两个相机内参已知，<code>p</code>，<code>q</code>是相机坐标系下的三维向量，满足等式：<code>pEq = 0</code>，<code>E=R[t]_x</code> 即若干个三维点在双目中可见，那么这些三维点在各自相机坐标系下的坐标应该满足的代数关系，<code>E</code>可以被分解为两个相机之间的相对外参：<code>R</code>，<code>t</code>。</p>
+<p><strong>相机内参已知</strong>，那么由像素点 $p$，$q$ 可以得到两个三维向量的方向： $K_p^{-1}p$ 和 $K_q^{-1}q$，此时这两个向量分别位于各自相机坐标系下，为了简写，直接记做 $p$，$q$。<br>当两个相机之间的旋转 $R$ 和平移 $T$ 已知，先把第二个相机中的三维向量根据旋转矩阵 $R$ 变换到第一个相机的坐标系中，为$R^Tq$，再根据Epipolar Geometry中的极平面的共面约束: $p$, $t$, $R^Tq$ 三个向量共面（在第一个相机坐标系下）；<br>共面约束在代数中表示为： 三个向量 $a$，$b$，$c$ 共面，那么其混合积（Mix Product）$(b\times{c})\cdot{a}$ 等于 $0$。理解：三个向量的混合积的物理意义表示这三个向量所组成平行六面体的体积，三个向量共面时体积为0。<br>则有代数方程：$(t\times{R^T}q)\cdot{p} = 0$，先把cross-product变换为矩阵计算，那么该代数方程可以写为 $p^T[t]_{\times}R^Tq = 0$，再对等式整体进行一次转置有：</p>
+<p>$$q^TR[t]_{\times}p=0$$</p>
+<p>其中矩阵 $R[t]_x$ 即为Essential Matrix $E$，这里的 $p$，$q$ 分别是相机坐标系由内参和像素点得到的三维向量。</p>
+<p>以上，Essential Matrix的物理意义可以简单的概括为：两个相机内参已知，$p$，$q$ 是相机坐标系下的三维向量，满足等式：$pEq = 0$，$E=R[t]_{\times}$ 。 即若干个三维点在双目中可见，那么这些三维点在各自相机坐标系下的坐标应该满足的代数关系，$E$ 可以被分解为两个相机之间的相对外参：$R$，$t$，分别为一个正定矩阵和一个反对称矩阵。</p>
 <ol start="2">
-<li>和 Fundamental Matrix</li>
+<li>Fundamental Matrix</li>
 </ol>
-<p><strong>相机内参未知</strong>，使用<code>p&#39;</code>，<code>q&#39;</code>表示像素点，那么带入到Essential Matrix的方程中：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（(k_q)^-1·q&#39;)^T·R[t]_x·((k_p)^-1·p&#39;)&#x3D;0</span><br></pre></td></tr></table></figure>
+<p><strong>相机内参未知</strong>，使用 $\hat{p}$，$\hat{q}$ 表示像素点，那么带入到Essential Matrix的方程中：</p>
+<p>$$（(K_q)^{-1}·\hat{q})^T·R[t]_{\times}·((K_p)^{-1}·\hat{p})=0 $$</p>
 <p>整理后有：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">q&#39;^T·(k_q)^-T·R[t]_x·(k_p)^-1·p&#39;&#x3D;0</span><br></pre></td></tr></table></figure>
-<p>其中的矩阵<code>(k_q)^-T·R[t]_x·(k_p)^-1</code>记做Fundamental Matrix <code>F</code>，表示两个图像平面对应点的像素坐标<code>p&#39;</code>，<code>q&#39;</code> （齐次坐标表示）应该满足的代数关系。<br>与Essential Matrix的区别是：Fundamental Matrix 描述的是两个像素的关系，Essential Matrix 描述的是两个三维向量的关系。</p>
-<p>更近一步理解Fundamental Matrix：Epipolar Geometry都可以从F得到，比如第一张图的像素<code>p</code>在第二张图像中的对应点<code>q</code>一定位于极线<code>Fp</code>上。<br>另外epipole的求解：假设<code>e1</code>是第二个相机中心<code>c2</code>在第一个相机的图像平面的投影点，<code>e2</code>是第一个相机中心<code>c1</code>在第二个相机平面的投影点。由于所有的极线都通过epipole，那么对于相机1的任意的一个像素点<code>p</code>，那么其极线<code>Fp</code>都通过epipole <code>e2</code>，意味着 <code>(e2^T)Fp=0</code>，对于任何一个p都成立，那么<code>(e2^T)F=0</code>，反之有<code>F(e1)=0</code>成立。</p>
-<h3 id="求解"><a href="#求解" class="headerlink" title="求解"></a>求解</h3><p>F的大小为3x3，初始自由度为9，由于方程定义在摄影几何，是equal up to scale，因此自由度实际为8。另外由于epipole的存在，那么<code>rank(F)=2</code>， 因此F的自由度为7。</p>
+<p>$$ \hat{q}^T·(K_q)^{-T}·R[t]_{\times}·(K_p)^{-1}·\hat{p}=0 $$ </p>
+<p>其中的矩阵 $(K_q)^{-T}·R[t]_{\times}·(K_p)^{-1}$ 记做Fundamental Matrix $F$，表示两个图像平面对应点的像素坐标 $\hat{p}$，$\hat{q}$ （齐次坐标）应该满足的代数关系。之后的讨论中，为了简便，像素点也使用 $p$，$q$。与Essential Matrix的区别是：Fundamental Matrix 描述的是两个像素的关系，Essential Matrix 描述的是两个三维向量的关系。</p>
+<p>更近一步理解Fundamental Matrix：Epipolar Geometry都可以从 $F$ 得到，比如第一张图的像素 $p$ 在第二张图像中的对应点 $q$ 一定位于极线 $Fp$ 上。<br>另外epipole的求解：假设 $e_1$ 是第二个相机中心 $C_2$在第一个相机的图像平面的投影点，$e_2$ 是第一个相机中心 $c_1$ 在第二个相机平面的投影点。由于所有的极线都通过epipole，那么对于相机1的任意的一个像素点 $p$，那么其极线 $Fp$ 都通过epipole $e_2$，意味着 $(e_2^T)Fp=0$，对于任何一个p都成立，那么 $(e_2^T)F=0$，反之有 $F(e_1)=0$成立。</p>
+<h3 id="求解"><a href="#求解" class="headerlink" title="求解"></a>求解</h3><p>$F$ 的大小为3x3，初始自由度为9，由于方程定义在摄影几何，是equal up to scale，因此自由度实际为8。另外由于epipole的存在，那么 $rank(F)=2$， 因此 $F$ 的自由度为7。</p>
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://www.imranqing.com/blog/2020/06/14/Two-view%20Geometry/" data-id="ckbem5f2y00003fv1ebln6i14" class="article-share-link">Share</a>
+    
+    
+    
+
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script type="text/javascript" src="http://jslibs.wuxubj.cn/sweetalert_mini/jquery-1.7.1.min.js"></script>
+  <script src="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://jslibs.wuxubj.cn/sweetalert_mini/sweetalert.mini.css">
+
+  <p><span>本文标题:</span>Two-view Geometry</a></p>
+  <p><span>文章作者:</span>Qing Ran</a></p>
+  <p><span>发布时间:</span>2020年06月14日 - 23:50:30</p>
+  <p><span>最后更新:</span>2020年06月15日 - 11:09:21</p>
+  <p><span>原始链接:</span><a href="/blog/2020/06/14/Two-view%20Geometry/" title="Two-view Geometry">http://www.imranqing.com/blog/2020/06/14/Two-view%20Geometry/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://www.imranqing.com/blog/2020/06/14/Two-view%20Geometry/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    clipboard.on('success', $(function(){
+      $(".fa-clipboard").click(function(){
+        swal({   
+          title: "",   
+          text: '复制成功',   
+          html: false,
+          timer: 500,   
+          showConfirmButton: false
+        });
+      });
+    }));  
+</script>
+
+      
+    </div>
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Qing Ran
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="http://www.imranqing.com/blog/2020/06/14/Two-view%20Geometry/" title="Two-view Geometry">http://www.imranqing.com/blog/2020/06/14/Two-view%20Geometry/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2020/06/14/Leetcode%20Everyday/" rel="next" title="每日一题">
+                <i class="fa fa-chevron-left"></i> 每日一题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
       
       
     </footer>
   </div>
   
-    
-<nav id="article-nav">
   
-    <a href="/blog/2020/06/14/Dynamic%20Programming/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
         
-          Dynamic Programming
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/blog/images/avatar.gif"
+                alt="Qing Ran" />
+            
+              <p class="site-author-name" itemprop="name">Qing Ran</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/blog/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Ranqing" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:raaanqing@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#几何概念"><span class="nav-number">1.</span> <span class="nav-text">几何概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代数表示"><span class="nav-number">2.</span> <span class="nav-text">代数表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求解"><span class="nav-number">3.</span> <span class="nav-text">求解</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
         
       </div>
-    </a>
-  
-  
-    <a href="/blog/2020/05/15/How%20to%20build%20a%20blog/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">How to build a blog</div>
-    </a>
-  
-</nav>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qing Ran</span>
 
   
-</article>
-
-</section>
-        
-          <aside id="sidebar">
-  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
     
-
-  
+      <span class="post-meta-item-text">Site words total count&#58;</span>
     
-
+    <span title="Site words total count">2.7k</span>
   
-    
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2020/05/">May 2020</a></li></ul>
-    </div>
-  </div>
+</div>
 
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/blog/2020/06/14/Dynamic%20Programming/">Dynamic Programming</a>
-          </li>
-        
-          <li>
-            <a href="/blog/2020/06/14/Two-view%20Geometry/">Two-view Geometry</a>
-          </li>
-        
-          <li>
-            <a href="/blog/2020/05/15/How%20to%20build%20a%20blog/">How to build a blog</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
 
-  
-</aside>
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
         
       </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2020 Qing Ran<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/blog/" class="mobile-nav-link">Home</a>
-  
-    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
     
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  
-<link rel="stylesheet" href="/blog/fancybox/jquery.fancybox.css">
-
-  
-<script src="/blog/fancybox/jquery.fancybox.pack.js"></script>
-
-
-
-
-<script src="/blog/js/script.js"></script>
-
-
-
+    
 
   </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/blog/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
 </body>
 </html>
